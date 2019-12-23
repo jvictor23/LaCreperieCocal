@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "187781103600",
+    "firebase_url": "https://lacreperiecocal-be2b1.firebaseio.com",
+    "project_id": "lacreperiecocal-be2b1",
+    "storage_bucket": "lacreperiecocal-be2b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187781103600:android:0b6e7024645d2c4dffa735",
+        "android_client_info": {
+          "package_name": "com.projeto.lacreperie_cocal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187781103600-mg4avuivmd6e750dmlfi0h077hc4qmpn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projeto.lacreperie_cocal",
+            "certificate_hash": "3f1442714d1c366afff41a72a332132e101eb89a"
+          }
+        },
+        {
+          "client_id": "187781103600-tg35f80p6s50ptgh7nul6i30ie3jhnf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5M7jt5tBbSnxFeLLuwVS8HgwNWlO_IEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187781103600-tg35f80p6s50ptgh7nul6i30ie3jhnf7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

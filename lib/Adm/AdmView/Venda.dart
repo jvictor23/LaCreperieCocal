@@ -1,0 +1,246 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
+import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
+import 'package:lacreperie_cocal/Cores.dart';
+import 'package:lacreperie_cocal/Entity/ItemVenda.dart';
+import 'package:lacreperie_cocal/Entity/Produto.dart';
+import 'package:lacreperie_cocal/Entity/Venda.dart' as Vennda;
+import 'package:lacreperie_cocal/Usuario/UsuarioController/UsuarioController.dart';
+import 'package:toast/toast.dart';
+
+class Venda extends StatefulWidget {
+  @override
+  _VendaState createState() => _VendaState();
+}
+
+class _VendaState extends State<Venda> {
+
+  AdmController _admController = AdmController();
+  List<DocumentSnapshot> doc;
+  DocumentSnapshot item;
+  int _qtd = 1;
+  List<Produto> _listaProduto = List<Produto>();
+  List<Map<String, dynamic>> _lista = List();
+  var _total = 0.00;
+  String _mostrarTotal = "0,00";
+
+
+
+  _pegarProdutos(Produto produto){
+    setState(() {
+      _listaProduto.add(produto);
+    });
+
+    var total = produto.preco * produto.qtd;
+
+    _total += total;
+
+
+    setState(() {
+      _mostrarTotal = _total.toString();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context){
+    _admController.buscarCrepeDoce().then((result){
+      doc = result;
+    });
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Venda"),
+        actions: <Widget>[
+          Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                "R\$" + _mostrarTotal,
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+          FlatButton(
+            disabledTextColor: Colors.black,
+            disabledColor: Colors.black,
+            child: Text(
+                "Confirmar",
+              style: TextStyle(
+                color: _listaProduto.isEmpty ? Colors.black : Colors.white
+              ),
+            ),
+            onPressed: _listaProduto.isEmpty ? null : (){
+                DateTime _dataEHora = DateTime.now();
+                String _data = formatDate(_dataEHora, [mm, yyyy]).toString();
+                print("aqui---------- " +  _data);
+
+                Vennda.Venda venda = Vennda.Venda();
+                ItemVenda itemVenda = ItemVenda();
+
+                for(Produto p in _listaProduto){
+                  itemVenda.nomeProduto = p.nomeProduto;
+                  itemVenda.qtd = p.qtd;
+                  itemVenda.preco = p.preco;
+                  _lista.add(itemVenda.toMap());
+                }
+
+                venda.dataVenda = formatDate(_dataEHora, [dd, "/", mm, "/", yyyy]).toString();
+                venda.horaVenda = formatDate(_dataEHora, [H, ":", nn]).toString();
+                venda.listaVenda = _lista;
+                venda.tipo = "Fisica";
+                venda.total = _total;
+
+                if(_admController.cadastrarVenda(venda, _data)!= null){
+                  Toast.show("Venda realizada!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                  setState(() {
+                    _listaProduto = List();
+                    _total = 0.0;
+                    _qtd = 0;
+                    _mostrarTotal = _total.toString();
+                    Navigator.pop(context);
+                  });
+                }else{
+                  Toast.show("Erro ao realizar venda, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                }
+
+            },
+          )
+        ],
+      ),
+      body: _listaProduto == null ? Center(child: Text("Nenhum produto"),) : ListView.builder(
+              itemCount: _listaProduto.length,
+              itemBuilder: (context, index){
+                Produto produtos = _listaProduto[index];
+                return Card(
+                  color: Color(Cores().corBotoes),
+                  child: ListTile(
+                    leading: Text(produtos.nomeProduto),
+                    trailing: Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 5),
+                            child: Text(
+                              "R\$" + produtos.preco.toString(),
+                              style: TextStyle(
+                                  color: Colors.blue
+                              ),
+                            )
+                            ,
+                          ),
+                          Text(
+                            "Qtd:"+produtos.qtd.toString(),
+                            style: TextStyle(
+                                color: Colors.red
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    onTap: (){
+                    },
+                  ),
+                );
+              }
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            showDialog(
+              context: context,
+              builder: (context){
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: doc.length == null ? 0 : doc.length,
+                          itemBuilder: (context, index){
+                            DocumentSnapshot produtos = doc[index];
+                              return Card(
+                                elevation: 5,
+                                child: ListTile(
+                                  onTap: (){
+                                    showDialog(
+                                        context: context,
+                                        builder: (context){
+                                          return AlertDialog(
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding: EdgeInsets.only(bottom: 5),
+                                                  child: Text(produtos["nomeProduto"]),
+                                                ),
+                                                Text("Quantidade"),
+                                                Padding(
+                                                  padding: EdgeInsets.only(left: 80, right: 80),
+                                                  child: TextFormField(
+                                                    initialValue: _qtd.toString(),
+                                                    onChanged: (result){
+                                                      _qtd = int.parse(result);
+                                                    },
+                                                    keyboardType: TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                        border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(6)
+                                                        )
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                  onPressed: (){
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Cancelar")
+                                              ),
+                                              FlatButton(
+                                                  child: Text("Confirmar"),
+                                                  onPressed: (){
+
+                                                    Produto produto = Produto();
+                                                    produto.nomeProduto = produtos["nomeProduto"];
+                                                    produto.preco = produtos["preco"];
+                                                    produto.qtd = _qtd;
+                                                    _pegarProdutos(produto);
+
+                                                    Navigator.pop(context);
+
+                                                  }
+                                              )
+                                            ],
+                                          );
+                                        }
+                                    );
+                                  },
+                                  title: Text(produtos["nomeProduto"]),
+                                  trailing: Text(produtos["preco"].toString()),
+                                ),
+                              );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        child: Text("Fechar")
+                    ),
+                  ],
+                );
+              }
+            );
+          },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
