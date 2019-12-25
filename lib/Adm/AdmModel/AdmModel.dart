@@ -45,10 +45,23 @@ class AdmModel{
     print(_data);
 
     
-    QuerySnapshot querySnapshot = await db.collection("Vendas").
+    /*QuerySnapshot querySnapshot = await db.collection("Vendas").
     document(_data).
-    collection(_data).getDocuments();
+    collection(_data).orderBy("dataVenda", descending: true ).orderBy("horaVenda", descending: true).getDocuments();*/
 
+    QuerySnapshot querySnapshot = await db.collection("Vendas").document(_data)
+        .collection(_data).orderBy("dataVenda", descending: true).getDocuments();
+
+    return querySnapshot;
+  }
+  
+  Future<QuerySnapshot>buscarVendaDiario(String data, String dataDia)async{
+    
+    /*QuerySnapshot querySnapshot = await db.collection("Vendas").document(data)
+        .collection(data).where("dataVenda" ,isEqualTo: dataDia).orderBy("", descending: true).orderBy("horaVenda", descending: true).getDocuments();*/
+
+    QuerySnapshot querySnapshot = await db.collection("Vendas").document(data)
+        .collection(data).where("dataVenda" ,isEqualTo: dataDia).getDocuments();
     return querySnapshot;
   }
 

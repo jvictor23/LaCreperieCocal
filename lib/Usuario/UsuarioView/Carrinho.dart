@@ -29,6 +29,7 @@ class _CarrinhoState extends State<Carrinho> {
   Firestore db = Firestore.instance;
   String _mostrarTotal = "0,00";
   var _total = 0.00;
+  double _ultimoTotal = 0.0;
   int _qtd = 1;
 
   _recuperarDadosUsuario() async {
@@ -50,7 +51,8 @@ class _CarrinhoState extends State<Carrinho> {
       setState(() {
         _mostrarTotal = _total.toString();
       });
-
+      _ultimoTotal = _total;
+      _total = 0.0;
     });
 
     _adicionarListenerCarrinho();

@@ -4,7 +4,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Cores.dart';
-import 'package:lacreperie_cocal/Entity/ItemVenda.dart';
+import 'package:lacreperie_cocal/Entity/ItemVendaFisica.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Entity/Venda.dart' as Vennda;
 import 'package:lacreperie_cocal/Usuario/UsuarioController/UsuarioController.dart';
@@ -76,7 +76,7 @@ class _VendaState extends State<Venda> {
                 print("aqui---------- " +  _data);
 
                 Vennda.Venda venda = Vennda.Venda();
-                ItemVenda itemVenda = ItemVenda();
+                ItemVendaFisica itemVenda = ItemVendaFisica();
 
                 for(Produto p in _listaProduto){
                   itemVenda.nomeProduto = p.nomeProduto;

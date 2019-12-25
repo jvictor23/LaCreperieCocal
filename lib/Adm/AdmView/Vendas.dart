@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
+import 'package:lacreperie_cocal/Adm/AdmView/VisualizarVenda.dart';
 import 'package:lacreperie_cocal/Cores.dart';
 
 class Vendas extends StatefulWidget {
@@ -14,7 +16,25 @@ class _VendasState extends State<Vendas> {
   TextEditingController _controllerData = TextEditingController();
   AdmController _admController = AdmController();
   QuerySnapshot _querySnapshot;
-  int _tamanhoLista;
+  String _mostrarTotal = "0,00";
+  double _total = 0.0;
+  double _ultimoTotal = 0.0;
+
+  _somarVenda(){
+    for(DocumentSnapshot documentSnapshot in _querySnapshot.documents){
+      var total = documentSnapshot["total"];
+      _total += total;
+    }
+
+    setState(() {
+      _mostrarTotal = _total.toString();
+    });
+
+    _ultimoTotal = _total;
+    _total = 0.0;
+
+    print(_ultimoTotal.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +42,15 @@ class _VendasState extends State<Vendas> {
       appBar: AppBar(
         title: Text("Vendas"),
         actions: <Widget>[
+          Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                "R\$" + _mostrarTotal,
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
           IconButton(
             icon: Icon(
                 Icons.calendar_today,
@@ -74,6 +103,7 @@ class _VendasState extends State<Vendas> {
                                             .then((result){
                                               setState(() {
                                                 _querySnapshot = result;
+                                                _somarVenda();
                                               });
                                         })
                                             .catchError((error){
@@ -104,7 +134,22 @@ class _VendasState extends State<Vendas> {
                   _data = dtPick;
                 });
               }
-                          },
+
+              String data = formatDate(_data, [mm, yyyy]);
+              String dataDia = formatDate(_data, [dd, "/", mm, "/", yyyy]);
+
+              _admController.buscarVendaDiario(data, dataDia).then((result){
+                setState(() {
+                  _querySnapshot = result;
+                  _somarVenda();
+                });
+              }).catchError((error){
+                print(error);
+              });
+
+              Navigator.pop(context);
+
+              },
                         )
                       ],
                     ),
@@ -136,7 +181,12 @@ class _VendasState extends State<Vendas> {
               return Card(
                 color: Color(Cores().corBotoes),
                 child: ListTile(
-                  title: Text(documentSnapshot["horaVenda"]),
+                  leading: Text(documentSnapshot["dataVenda"]),
+                  trailing: Text(documentSnapshot["horaVenda"]),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => VisualizarVenda(documentSnapshot)));
+                  },
+
                 ),
               );
             }

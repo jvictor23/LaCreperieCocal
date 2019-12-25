@@ -28,8 +28,12 @@ class AdmController{
     return _admModel.cadastrarVenda(venda, data);
   }
 
-  Future<QuerySnapshot>buscarVendaMensal(String data){
+  Future<QuerySnapshot> buscarVendaMensal(String data){
    return _admModel.buscarVendaMensal(data);
+  }
+
+  Future<QuerySnapshot> buscarVendaDiario(String data, String dataDia){
+   return _admModel.buscarVendaDiario(data, dataDia);
   }
 
   bool excluirProduto(String idProduto, String tipoProduto){

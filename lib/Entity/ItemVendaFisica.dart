@@ -1,13 +1,16 @@
-class ItemVenda{
+import 'package:lacreperie_cocal/Entity/Pedido.dart';
+
+class ItemVendaFisica{
   String _nomeProduto;
   double _preco;
   int _qtd;
+
 
   Map<String, dynamic> toMap(){
     Map<String, dynamic> map = {
       "nomeProduto":this.nomeProduto,
       "preco":this.preco,
-      "quantidade":this.qtd
+      "quantidade":this.qtd,
     };
     return map;
   }
