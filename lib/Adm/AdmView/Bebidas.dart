@@ -74,7 +74,7 @@ class _BebidasState extends State<Bebidas> {
                           ),
                           FlatButton(
                               onPressed: () {
-                                _admController.excluirProduto(produtos["nomeProduto"], produtos["tipo"]);
+                                _admController.excluirProduto(produtos["id"], produtos["tipo"]);
                                 Navigator.pop(context);
                               },
                               child: Text("Deletar")

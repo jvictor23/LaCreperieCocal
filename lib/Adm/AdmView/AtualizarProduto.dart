@@ -1,52 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Cores.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
+import 'package:toast/toast.dart';
 
 
 class AtualizarProduto extends StatefulWidget {
   @override
   _AtualizarProdutoState createState() => _AtualizarProdutoState();
-  String nomeProduto;
-  String ingredientes;
-  String tipo;
-  double preco;
 
-  AtualizarProduto(this.nomeProduto, this.ingredientes, this.tipo, this.preco);
+  DocumentSnapshot produtos;
+
+  AtualizarProduto(this.produtos);
 
 }
 
 class _AtualizarProdutoState extends State<AtualizarProduto> {
 
-  TextEditingController _controllerNomeProduto;
-  TextEditingController _controllerIgredientes;
-  TextEditingController _controllerTipo;
-  TextEditingController _controllerPreco;
-
-
-
 
   String _mensagemErro ="";
 
+  TextEditingController _controllerTipo = TextEditingController();
+
+  String _nomeProduto;
+  String _ingredientes;
+  String _tipo;
+  String _preco;
+
+  AdmController _admController = AdmController();
+
+
   _verificarCampos(){
 
-    String nomeProduto = _controllerNomeProduto.text;
-    String ingredientes = _controllerIgredientes.text;
-    String tipo= _controllerTipo.text;
-    String preco = _controllerPreco.text;
-
-    if(nomeProduto.isNotEmpty){
-      if(ingredientes.isNotEmpty){
-        if(tipo.isNotEmpty){
-          if(preco.isNotEmpty){
+    if(_nomeProduto.isNotEmpty){
+      if(_ingredientes.isNotEmpty){
+        if(_tipo.isNotEmpty){
+          if(_preco.isNotEmpty){
 
             Produto produto = Produto();
-            produto.nomeProduto = nomeProduto;
-            produto.ingredientes = ingredientes;
-            produto.tipo = tipo;
-            produto.preco = preco as double;
+            produto.nomeProduto = _nomeProduto;
+            produto.ingredientes = _ingredientes;
+            produto.tipo = _tipo;
+            produto.preco = double.parse(_preco);
+            produto.id = widget.produtos["id"];
+            produto.imagem = widget.produtos["imagem"];
 
-            _atualizarProduto(produto);
+            if(_admController.atualizarProduto(produto)){
+              Toast.show("Produto Atualizado!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              Navigator.pop(context);
+            }
+
 
           }else{
             setState(() {
@@ -81,12 +86,12 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
   @override
   Widget build(BuildContext context) {
 
-      var _nomeProduto = widget.nomeProduto;
+    _nomeProduto = widget.produtos["nomeProduto"];
+    _ingredientes = widget.produtos["ingredientes"];
+    _tipo = widget.produtos["tipo"];
+    _preco = widget.produtos["preco"].toString();
 
-   _controllerNomeProduto = new TextEditingController(text: _nomeProduto);
-    _controllerIgredientes = new TextEditingController(text: widget.ingredientes);
-    _controllerTipo = new TextEditingController(text: widget.tipo);
-    _controllerPreco = new TextEditingController(text: widget.preco.toString());
+
 
     return Scaffold(
       appBar: AppBar(
@@ -101,12 +106,10 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(bottom: 6),
-                  child: TextField(
-                    controller: _controllerNomeProduto,
-                    onChanged: (nomeProduto){
-                      setState(() {
-                        _nomeProduto = nomeProduto;
-                      });
+                  child: TextFormField(
+                    initialValue: _nomeProduto,
+                    onChanged: (change){
+                      _nomeProduto = change;
                     },
                     style: TextStyle(color: Color(Cores().corTexto)),
                     cursorColor: Color(Cores().corTexto),
@@ -127,8 +130,12 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(bottom: 6),
-                  child: TextField(
-                    controller: _controllerIgredientes,
+                  child: TextFormField(
+                   // controller: _controllerIgredientes,
+                    initialValue: _ingredientes,
+                    onChanged: (change){
+                      _ingredientes = change;
+                    },
                     style: TextStyle(color: Color(Cores().corTexto)),
                     cursorColor: Color(Cores().corTexto),
                     keyboardType: TextInputType.text,
@@ -148,8 +155,12 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(bottom: 6),
-                  child: TextField(
-                    controller: _controllerTipo,
+                  child: TextFormField(
+                    initialValue: _tipo,
+                    enabled: false,
+                    onChanged: (change){
+                      _tipo = change;
+                    },
                     onTap: (){
                       showDialog(context: context,builder:(context){
                         return  AlertDialog(
@@ -160,7 +171,7 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
                                 FlatButton(
                                   onPressed: (){
                                     setState(() {
-                                      _controllerTipo = TextEditingController(text: "Crepe Salgado");
+                                     _controllerTipo = TextEditingController(text: "Crepe Salgado");
                                     });
                                     Navigator.pop(context);
                                   },
@@ -188,7 +199,7 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
                                 FlatButton(
                                   onPressed: (){
                                     setState(() {
-                                      _controllerTipo = TextEditingController(text: "Bebidas");
+                                    _controllerTipo = TextEditingController(text: "Bebidas");
                                     });
                                     Navigator.pop(context);
                                   },
@@ -224,8 +235,11 @@ class _AtualizarProdutoState extends State<AtualizarProduto> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(bottom: 16),
-                  child: TextField(
-                    controller: _controllerPreco,
+                  child: TextFormField(
+                    initialValue: _preco,
+                    onChanged: (change){
+                      _preco = change;
+                    },
                     style: TextStyle(color: Color(Cores().corTexto)),
                     cursorColor: Color(Cores().corTexto),
                     keyboardType:

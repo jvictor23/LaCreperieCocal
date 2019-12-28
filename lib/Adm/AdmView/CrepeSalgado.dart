@@ -66,9 +66,9 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
                           FlatButton(
                               onPressed: () {
                                 Navigator.pop(context);
-                                /*Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => AtualizarProduto(produtos["nomeProduto"], produtos["ingredientes"], produtos["tipo"], produtos["preco"]),
-                                ));*/
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => AtualizarProduto(produtos),
+                                ));
                               },
                               child: Text("Atualizar")
                           ),

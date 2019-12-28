@@ -21,8 +21,8 @@ class AdmController{
 
   }
 
-  bool atualizarProduto(){
-
+  bool atualizarProduto(Produto produto){
+    return _admModel.atualizarProduto(produto);
   }
 
   Future<bool> cadastrarVendaFisica(VendaFisica venda, String data){

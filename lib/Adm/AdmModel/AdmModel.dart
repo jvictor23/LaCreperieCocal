@@ -29,8 +29,9 @@ class AdmModel{
 
 
 
-  bool atualizarProduto(){
-
+  bool atualizarProduto(Produto produto){
+    db.collection("Produto").document(produto.tipo).collection(produto.tipo).document(produto.id).setData(produto.toMap());
+    return true;
   }
 
   Future<bool> cadastrarVendaFisica(VendaFisica venda,String data)async{

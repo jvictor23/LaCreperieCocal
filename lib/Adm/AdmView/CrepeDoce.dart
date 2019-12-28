@@ -70,7 +70,7 @@ class _CrepeDoceState extends State<CrepeDoce> {
                           ),
                           FlatButton(
                               onPressed: () {
-                                _admController.excluirProduto(produtos["nomeProduto"], produtos["tipo"]);
+                                _admController.excluirProduto(produtos["id"], produtos["tipo"]);
                                 Navigator.pop(context);
                               },
                               child: Text("Deletar")
