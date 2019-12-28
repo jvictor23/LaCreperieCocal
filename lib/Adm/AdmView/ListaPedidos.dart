@@ -6,10 +6,10 @@ import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Adm/AdmView/Pedido.dart';
 import 'package:lacreperie_cocal/Cores.dart';
 import 'package:date_format/date_format.dart';
-import 'package:lacreperie_cocal/Entity/ItemVendaFisica.dart';
-import 'package:lacreperie_cocal/Entity/ItemVendaOnline.dart';
+import 'package:lacreperie_cocal/Entity/ItemVenda.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
-import 'package:lacreperie_cocal/Entity/Venda.dart';
+import 'package:lacreperie_cocal/Entity/VendaFisica.dart';
+import 'package:lacreperie_cocal/Entity/VendaOnline.dart';
 import 'package:toast/toast.dart';
 
 class ListaPedidos extends StatefulWidget {
@@ -24,11 +24,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
   List<DocumentSnapshot> doc;
   DocumentSnapshot item;
   int _qtd = 1;
-  List<Produto> _listaProduto = List<Produto>();
   List<Map<String, dynamic>> _lista = List();
-  var _total = 0.00;
-  String _mostrarTotal = "0,00";
-
   Stream<QuerySnapshot> _adicionarListenerListaPedidos(){
    Firestore.instance.collection("Pedidos").getDocuments().then((snapshot){
      _controller.add(snapshot);
@@ -82,29 +78,20 @@ class _ListaPedidosState extends State<ListaPedidos> {
                                   DateTime _dataEHora = DateTime.now();
                                   String _data = formatDate(_dataEHora, [mm, yyyy]).toString();
 
-                                  Venda venda = Venda();
-                                  ItemVendaOnline itemVenda = ItemVendaOnline();
-
-                                  for(Produto p in _listaProduto){
-                                    itemVenda.nomeProduto = p.nomeProduto;
-                                    itemVenda.qtd = p.qtd;
-                                    itemVenda.preco = p.preco;
-                                    _lista.add(itemVenda.toMap());
-                                  }
+                                  VendaOnline venda = VendaOnline();
 
                                   venda.dataVenda = formatDate(_dataEHora, [dd, "/", mm, "/", yyyy]).toString();
                                   venda.horaVenda = formatDate(_dataEHora, [H, ":", nn]).toString();
-                                  venda.listaVenda = _lista;
+                                  venda.listaVenda = pedidos["listaPedidos"];
                                   venda.tipo = "Online";
-                                  venda.total = _total;
+                                  venda.total = pedidos["total"];
+                                  venda.nomeCliente = pedidos["nomeUsuario"];
+                                  venda.metodoPagamento = pedidos["meioPagamento"];
+                                  venda.idCliente = pedidos["idUsuario"];
 
-                                  if(_admController.cadastrarVenda(venda, _data)!= null){
+                                  if(_admController.cadastrarVendaOnline(venda, _data)!= null){
                                     Toast.show("Venda realizada!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                                     setState(() {
-                                      _listaProduto = List();
-                                      _total = 0.0;
-                                      _qtd = 0;
-                                      _mostrarTotal = _total.toString();
                                       Navigator.pop(context);
                                     });
                                   }else{

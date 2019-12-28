@@ -5,7 +5,8 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Entity/Usuario.dart';
-import 'package:lacreperie_cocal/Entity/Venda.dart';
+import 'package:lacreperie_cocal/Entity/VendaFisica.dart';
+import 'package:lacreperie_cocal/Entity/VendaOnline.dart';
 
 class AdmModel{
 
@@ -32,7 +33,15 @@ class AdmModel{
 
   }
 
-  Future<bool> cadastrarVenda(Venda venda,String data)async{
+  Future<bool> cadastrarVendaFisica(VendaFisica venda,String data)async{
+    DocumentReference doc = await db.collection("Vendas").document(data).collection(data).add(venda.toMap());
+    venda.idVenda = doc.documentID;
+    db.collection("Vendas").document(data).collection(data).document(venda.idVenda).setData(venda.toMap());
+
+    return true;
+  }
+
+  Future<bool> cadastrarVendaOnline(VendaOnline venda,String data)async{
     DocumentReference doc = await db.collection("Vendas").document(data).collection(data).add(venda.toMap());
     venda.idVenda = doc.documentID;
     db.collection("Vendas").document(data).collection(data).document(venda.idVenda).setData(venda.toMap());

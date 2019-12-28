@@ -4,7 +4,8 @@ import 'package:lacreperie_cocal/Adm/AdmModel/AdmModel.dart';
 import 'dart:async';
 
 import 'package:lacreperie_cocal/Entity/Produto.dart';
-import 'package:lacreperie_cocal/Entity/Venda.dart';
+import 'package:lacreperie_cocal/Entity/VendaFisica.dart';
+import 'package:lacreperie_cocal/Entity/VendaOnline.dart';
 
 class AdmController{
 
@@ -24,8 +25,12 @@ class AdmController{
 
   }
 
-  Future<bool> cadastrarVenda(Venda venda, String data){
-    return _admModel.cadastrarVenda(venda, data);
+  Future<bool> cadastrarVendaFisica(VendaFisica venda, String data){
+    return _admModel.cadastrarVendaFisica(venda, data);
+  }
+
+  Future<bool> cadastrarVendaOnline(VendaOnline venda, String data){
+    return _admModel.cadastrarVendaOnline(venda, data);
   }
 
   Future<QuerySnapshot> buscarVendaMensal(String data){

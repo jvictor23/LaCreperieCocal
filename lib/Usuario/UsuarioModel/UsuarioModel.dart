@@ -111,11 +111,12 @@ class UsuarioModel{
     pedido.endereco = dados["endereco"];
     pedido.nomeUsuario = dados["nome"];
     pedido.telefone = dados["telefone"];
+    pedido.idUsuario = user.uid;
 
     final ref = db.collection("Pedidos");
     DocumentReference docRef = ref.document();
     docRef.setData(pedido.toMap()).then((doc){
-      pedido.id = docRef.documentID;
+      pedido.idPedido = docRef.documentID;
       db.collection("Pedidos").document(docRef.documentID).setData(pedido.toMap());
     });
 

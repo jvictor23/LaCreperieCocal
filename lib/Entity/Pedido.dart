@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:lacreperie_cocal/Entity/ItemPedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 
 class Pedido{
-  String _id;
+  String _idPedido;
+  String _idUsuario;
   String _endereco;
   List<Map<String,dynamic>> _mapItemPedido;
   String _meioPagamento;
@@ -24,7 +26,8 @@ class Pedido{
       "observacao" : this._observacao,
       "total" :this._total,
       "listaPedidos" : this._mapItemPedido,
-      "id" : _id
+      "idPedido" : this.idPedido,
+      "idUsuario" : this.idUsuario
     };
     return map;
   }
@@ -73,10 +76,16 @@ class Pedido{
     _endereco = value;
   }
 
-  String get id => _id;
+  String get idUsuario => _idUsuario;
 
-  set id(String value) {
-    _id = value;
+  set idUsuario(String value) {
+    _idUsuario = value;
+  }
+
+  String get idPedido => _idPedido;
+
+  set idPedido(String value) {
+    _idPedido = value;
   }
 
 

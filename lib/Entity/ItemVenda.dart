@@ -1,6 +1,6 @@
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 
-class ItemVendaFisica{
+class ItemVenda{
   String _nomeProduto;
   double _preco;
   int _qtd;

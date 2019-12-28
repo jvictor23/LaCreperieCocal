@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Entity/Usuario.dart';
-import 'package:lacreperie_cocal/Entity/Venda.dart';
+import 'package:lacreperie_cocal/Entity/VendaFisica.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioModel/UsuarioModel.dart';
 
 

@@ -1,6 +1,6 @@
 import 'package:date_format/date_format.dart';
 
-class Venda{
+class VendaFisica{
 
  String _dataVenda;
  String _horaVenda;
@@ -8,6 +8,7 @@ class Venda{
  List<Map<String,dynamic>> _listaVenda;
  String _tipo;
  String _idVenda;
+ String _metodoPagamento;
 
  Map<String, dynamic> toMap(){
    Map<String, dynamic> map = {
@@ -16,7 +17,8 @@ class Venda{
      "total" : this.total,
      "listaVenda" : this.listaVenda,
      "tipo" : this.tipo,
-     "idVenda" : this.idVenda
+     "idVenda" : this.idVenda,
+     "metodoPagamento" : this.metodoPagamento,
    };
    return map;
  }
@@ -57,6 +59,12 @@ class Venda{
 
  set horaVenda(String value) {
    _horaVenda = value;
+ }
+
+ String get metodoPagamento => _metodoPagamento;
+
+ set metodoPagamento(String value) {
+   _metodoPagamento = value;
  }
 
 
