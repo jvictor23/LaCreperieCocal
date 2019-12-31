@@ -74,6 +74,12 @@ class _ListaPedidosState extends State<ListaPedidos> {
                             actions: <Widget>[
                               FlatButton(
                                 onPressed: (){
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Cancelar"),
+                              ),
+                              FlatButton(
+                                onPressed: (){
 
                                   DateTime _dataEHora = DateTime.now();
                                   String _data = formatDate(_dataEHora, [mm, yyyy]).toString();
@@ -99,12 +105,6 @@ class _ListaPedidosState extends State<ListaPedidos> {
                                   }
                                 },
                                 child: Text("Confirmar"),
-                              ),
-                              FlatButton(
-                                onPressed: (){
-                                  Navigator.pop(context);
-                                },
-                                child: Text("Cancelar"),
                               ),
                             ],
                           );

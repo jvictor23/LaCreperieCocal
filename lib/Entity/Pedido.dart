@@ -13,7 +13,8 @@ class Pedido{
   String _telefone;
   String _observacao;
   double _total;
-
+  String _data;
+  String _hora;
 
   Pedido();
 

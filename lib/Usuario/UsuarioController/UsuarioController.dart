@@ -27,6 +27,14 @@ class UsuarioController{
 
   }
 
+  Future<DocumentSnapshot>buscarUsuario(){
+    return _usuarioModel.buscarUsuario();
+  }
+
+  bool atualizarUsuario(Usuario usuario){
+   return _usuarioModel.atualizarUsuario(usuario);
+  }
+
   atualizaQuantidade(Produto produto){
     _usuarioModel.atualizaQuantidade(produto);
   }

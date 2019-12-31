@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lacreperie_cocal/Usuario/UsuarioController/UsuarioController.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioView/Bebidas.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioView/Carrinho.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioView/Configuracoes.dart';
@@ -23,12 +24,17 @@ class _PrincipalState extends State<Principal>
   TabController _tabController;
   List<String> _itensMenu = ["Configurações", "Sair"];
 
+  String _idUser;
+  Firestore db = Firestore.instance;
+  int _qtdCarrinho = 0;
+  UsuarioController _usuarioController = UsuarioController();
+  String _mostarQtd = "0";
+
   _verificaUsuarioLogado()async{
     Firestore db = Firestore.instance;
     FirebaseAuth auth = FirebaseAuth.instance;
     FirebaseUser user = await auth.currentUser();
     DocumentSnapshot snapshot = await db.collection("usuarios").document(user.uid).get();
-
 
    /* if(user == null){
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
@@ -41,36 +47,34 @@ class _PrincipalState extends State<Principal>
     }*/
   }
 
-  String _idUser;
-  final _controller = StreamController<QuerySnapshot>.broadcast();
-  Firestore db = Firestore.instance;
-  int _qtdCarrinho = 0;
 
-  Stream<QuerySnapshot> _quantidadeCarrinho() {
-    final stream = db
+  _quantidadeCarrinho()async{
+
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseUser user = await auth.currentUser();
+    _idUser = user.uid;
+
+    db
         .collection("Carrinho")
         .document(_idUser)
         .collection(_idUser)
-        .snapshots();
+        .snapshots()
+        .listen((snapshot) {
+      for (DocumentSnapshot item in snapshot.documents) {
+        var totalQtd = item["quantidade"];
+        _qtdCarrinho += totalQtd;
+      }
 
-    stream.listen((snapshot) {
-      _controller.add(snapshot);
+      setState(() {
+        _mostarQtd = _qtdCarrinho.toString();
+      });
+      _qtdCarrinho = 0;
 
     });
-  }
-
-  Future<Stream<QuerySnapshot>>_pegarQuantidadeCarrinho(){
-    _quantidadeCarrinho();
-    StreamBuilder(
-      stream: _controller.stream,
-      // ignore: missing_return
-      builder: (context, snapshot){
-        QuerySnapshot querySnapshot = snapshot.data;
-        _qtdCarrinho = querySnapshot.documents.length;
-      },
-    );
 
   }
+
+
 
   @override
   void initState() {
@@ -79,8 +83,8 @@ class _PrincipalState extends State<Principal>
       length: 3,
       vsync: this,
     );
-    _verificaUsuarioLogado();
-    _pegarQuantidadeCarrinho();
+    //_verificaUsuarioLogado();
+    _quantidadeCarrinho();
   }
 
   _escolhaMenuItem(String itemEscolhido) {
@@ -126,7 +130,7 @@ class _PrincipalState extends State<Principal>
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 5),
-                    child: Text(_qtdCarrinho.toString()),
+                    child: Text(_mostarQtd),
                   )
                 ],
               ),

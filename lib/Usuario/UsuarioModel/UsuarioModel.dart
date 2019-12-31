@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' as prefix0;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
@@ -137,6 +136,24 @@ class UsuarioModel{
 
   }
 
+  Future<DocumentSnapshot> buscarUsuario()async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseUser user = await auth.currentUser();
+
+    Firestore db = Firestore.instance;
+
+    DocumentSnapshot snapshot = await db.collection("Usuarios").document(user.uid).get();
+
+    return snapshot;
+  }
+
+
+
+   bool atualizarUsuario(Usuario usuario){
+    Firestore db = Firestore.instance;
+    db.collection("Usuario").document(usuario.id).setData(usuario.toMap());
+    return true;
+  }
 
 
   StreamController<QuerySnapshot> listarCrepeSalgado(){

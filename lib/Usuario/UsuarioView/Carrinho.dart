@@ -8,6 +8,8 @@ import 'package:lacreperie_cocal/Entity/ItemPedido.dart';
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioController/UsuarioController.dart';
+import 'package:toast/toast.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class Carrinho extends StatefulWidget {
   @override
@@ -23,7 +25,7 @@ class _CarrinhoState extends State<Carrinho> {
   List<DocumentSnapshot> _doc;
   List<Map<String, dynamic>> itensCarrinho = new List();
 
-  bool _estadoSwitch = false;
+
   String _idUser;
   final _controller = StreamController<QuerySnapshot>.broadcast();
   Firestore db = Firestore.instance;
@@ -79,6 +81,9 @@ class _CarrinhoState extends State<Carrinho> {
 
   @override
   Widget build(BuildContext context) {
+
+    int _estadoSwitch;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Carrinho"),
@@ -284,27 +289,32 @@ class _CarrinhoState extends State<Carrinho> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Text("Dinheiro"),
-                            Switch(
-                              value: _estadoSwitch,
-                              onChanged: (toque) {
-                                setState(() {
-                                  _estadoSwitch = toque;
-                                });
-                              },
-                            ),
-                            Text("Cartão")
-                          ],
+                        ToggleSwitch(
+                          minWidth: 90.0,
+                          initialLabelIndex: 2,
+                          activeBgColor: Colors.green,
+                          activeTextColor: Colors.white,
+                          inactiveBgColor: Colors.grey,
+                          inactiveTextColor: Colors.grey[900],
+                          labels: ['Dinheiro', 'Cartão'],
+                          onToggle: (index) {
+                            setState(() {
+                              _estadoSwitch = index;
+                            });
+
+
+                          },
                         ),
-                        TextField(
-                          controller: _controllerObs,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                              hintText: "Observação",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(1))),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: TextField(
+                            controller: _controllerObs,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                                hintText: "Observação",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(1))),
+                          ),
                         )
                       ],
                     ),
@@ -321,13 +331,26 @@ class _CarrinhoState extends State<Carrinho> {
                       color: Colors.white,
                       child: Text("Confirmar"),
                       onPressed: (){
-                        if(_estadoSwitch){
+
+                        if(_doc == null){
+                          Toast.show(
+                              "Adicione produtos ao carrinho para realizar o pedido!", context, duration: Toast.LENGTH_LONG,
+                              gravity: Toast.BOTTOM);
+                        }
+
+                        if(_estadoSwitch == null){
+                          Toast.show(
+                              "Escholha um metodo de pagamento!", context, duration: Toast.LENGTH_LONG,
+                              gravity: Toast.BOTTOM);
+                        }
+
+                        if(_estadoSwitch == 0){
                           setState(() {
-                            _metodoPagamento = "Cartão";
+                            _metodoPagamento = "Dinheiro";
                           });
                         }else{
                           setState(() {
-                            _metodoPagamento = "Dinheiro";
+                            _metodoPagamento = "Cartao";
                           });
                         }
 
@@ -348,7 +371,7 @@ class _CarrinhoState extends State<Carrinho> {
                        Pedido pedido = new Pedido();
                        pedido.mapItemPedido = itensCarrinho;
                        pedido.meioPagamento = _metodoPagamento;
-                       pedido.total = _total;
+                       pedido.total = _ultimoTotal;
                        pedido.observacao = _controllerObs.text;
                         _usuarioController.finalizarPedido(pedido);
                         Navigator.pop(context);

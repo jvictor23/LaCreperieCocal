@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Cores.dart';
+import 'package:lacreperie_cocal/Entity/Usuario.dart';
+import 'package:lacreperie_cocal/Usuario/UsuarioController/UsuarioController.dart';
+import 'package:toast/toast.dart';
 
 
 class Configuracoes extends StatefulWidget {
@@ -9,8 +13,57 @@ class Configuracoes extends StatefulWidget {
 }
 
 class _ConfiguracoesState extends State<Configuracoes> {
+
+  UsuarioController _usuarioController = UsuarioController();
+  Usuario _usuario = Usuario();
+  DocumentSnapshot _snapshot;
+
+
+  _verificaCampos(Usuario usuario){
+    if(usuario.nome.isNotEmpty){
+      if(usuario.endereco.isNotEmpty){
+        if(usuario.telefone.isNotEmpty){
+
+          if(_usuarioController.atualizarUsuario(usuario)){
+            Toast.show("Dados atualizados!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          }else{
+            Toast.show("Erro ao atualizar dados, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          }
+
+        }else{
+          Toast.show("O campo telefone não pode ficar vazio!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        }
+      }else{
+        Toast.show("O campo endereço não pode ficar vazio!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }
+    }else{
+      Toast.show("O campo nome não pode ficar vazio!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    _usuarioController.buscarUsuario().then((result){
+      setState(() {
+        _snapshot = result;
+      });
+    }).catchError((error){
+      print(error);
+    });
+
+    if(_snapshot != null){
+      _usuario.nome = _snapshot["nome"];
+      _usuario.endereco = _snapshot["endereco"];
+      _usuario.senha = _snapshot["senha"];
+      _usuario.id = _snapshot["id"];
+      _usuario.email = _snapshot["email"];
+      _usuario.telefone = _snapshot["telefone"];
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Configurações"),
@@ -19,7 +72,7 @@ class _ConfiguracoesState extends State<Configuracoes> {
         padding: EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Center(
-            child: Column(
+            child: _snapshot == null ? Center(child: CircularProgressIndicator(),) : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                Padding(
@@ -28,7 +81,12 @@ class _ConfiguracoesState extends State<Configuracoes> {
                ),
                 Padding(
                   padding: EdgeInsets.only(bottom: 10),
-                  child: TextField(
+                  child: TextFormField(
+                    enabled: false,
+                    initialValue: _usuario.nome == null ? "" : _usuario.nome,
+                    onChanged: (changed){
+                        _usuario.nome = changed;
+                    },
                     style: TextStyle(
                         color: Color(Cores().corTexto)
                     ),
@@ -54,7 +112,13 @@ class _ConfiguracoesState extends State<Configuracoes> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(bottom: 10),
-                  child: TextField(
+                  child: TextFormField(
+                    initialValue: _usuario.endereco == null ? "" : _usuario.endereco,
+                    onChanged: (changed){
+
+                        _usuario.endereco = changed;
+
+                    },
                     style: TextStyle(
                         color: Color(Cores().corTexto)
                     ),
@@ -78,7 +142,13 @@ class _ConfiguracoesState extends State<Configuracoes> {
                   padding: EdgeInsets.only(left: 5),
                   child: Text("Telefone:"),
                 ),
-                TextField(
+                TextFormField(
+                  initialValue: _usuario.telefone == null ? "" : _usuario.telefone,
+                  onChanged: (changed){
+
+                      _usuario.telefone = changed;
+
+                  },
                   style: TextStyle(
                       color: Color(Cores().corTexto)
                   ),
@@ -102,7 +172,9 @@ class _ConfiguracoesState extends State<Configuracoes> {
                  child:  RaisedButton(
                    elevation: 20,
                    padding: EdgeInsets.fromLTRB(8, 16, 8, 16),
-                   onPressed: (){},
+                   onPressed: (){
+                     _verificaCampos(_usuario);
+                   },
                    color: Color(Cores().corBotoes),
                    child: Text(
                      "Salvar",
