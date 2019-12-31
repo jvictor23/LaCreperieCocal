@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Cores.dart';
@@ -336,45 +337,49 @@ class _CarrinhoState extends State<Carrinho> {
                           Toast.show(
                               "Adicione produtos ao carrinho para realizar o pedido!", context, duration: Toast.LENGTH_LONG,
                               gravity: Toast.BOTTOM);
-                        }
-
-                        if(_estadoSwitch == null){
+                        }else if(_estadoSwitch == null){
                           Toast.show(
                               "Escholha um metodo de pagamento!", context, duration: Toast.LENGTH_LONG,
                               gravity: Toast.BOTTOM);
-                        }
-
-                        if(_estadoSwitch == 0){
-                          setState(() {
-                            _metodoPagamento = "Dinheiro";
-                          });
                         }else{
-                          setState(() {
-                            _metodoPagamento = "Cartao";
-                          });
+
+                          if(_estadoSwitch == 0){
+                            setState(() {
+                              _metodoPagamento = "Dinheiro";
+                            });
+                          }else{
+                            setState(() {
+                              _metodoPagamento = "Cartao";
+                            });
+                          }
+
+
+
+                          ItemPedido itemPedido = new ItemPedido();
+                          for(DocumentSnapshot a in _doc){
+
+                            itemPedido.nomeProduto = a["nomeProduto"];
+                            itemPedido.ingredientes = a["ingredientes"];
+                            itemPedido.imagem = a["imagem"];
+                            itemPedido.preco = a["preco"];
+                            itensCarrinho.add(itemPedido.toMap());
+
+                          }
+
+                          DateTime _time = DateTime.now();
+
+
+                          Pedido pedido = new Pedido();
+                          pedido.mapItemPedido = itensCarrinho;
+                          pedido.meioPagamento = _metodoPagamento;
+                          pedido.total = _ultimoTotal;
+                          pedido.observacao = _controllerObs.text;
+                          pedido.hora = formatDate(_time, [H, ":", nn]).toString();
+                          pedido.data = formatDate(_time, [dd, "/", mm, "/", yyyy]).toString();
+                          _usuarioController.finalizarPedido(pedido);
+                          Navigator.pop(context);
+
                         }
-
-
-
-                      ItemPedido itemPedido = new ItemPedido();
-                        for(DocumentSnapshot a in _doc){
-
-                          itemPedido.nomeProduto = a["nomeProduto"];
-                          itemPedido.ingredientes = a["ingredientes"];
-                          itemPedido.imagem = a["imagem"];
-                          itemPedido.preco = a["preco"];
-                          itensCarrinho.add(itemPedido.toMap());
-
-                        }
-
-
-                       Pedido pedido = new Pedido();
-                       pedido.mapItemPedido = itensCarrinho;
-                       pedido.meioPagamento = _metodoPagamento;
-                       pedido.total = _ultimoTotal;
-                       pedido.observacao = _controllerObs.text;
-                        _usuarioController.finalizarPedido(pedido);
-                        Navigator.pop(context);
 
                       },
                     )

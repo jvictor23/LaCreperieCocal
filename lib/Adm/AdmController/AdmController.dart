@@ -25,6 +25,10 @@ class AdmController{
     return _admModel.atualizarProduto(produto);
   }
 
+  bool excluirPedido(String idPedido){
+   return _admModel.excluirPedido(idPedido);
+  }
+
   Future<bool> cadastrarVendaFisica(VendaFisica venda, String data){
     return _admModel.cadastrarVendaFisica(venda, data);
   }

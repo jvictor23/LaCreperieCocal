@@ -50,6 +50,12 @@ class AdmModel{
     return true;
   }
 
+  bool excluirPedido(String idPedido){
+
+    db.collection("Pedidos").document(idPedido).delete();
+    return true;
+  }
+
   Future<QuerySnapshot>buscarVendaMensal(String data)async{
     String _data = data.replaceAll( RegExp(r'/'), "");
     print(_data);

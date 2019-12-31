@@ -23,11 +23,12 @@ class _ListaPedidosState extends State<ListaPedidos> {
   AdmController _admController = AdmController();
   List<DocumentSnapshot> doc;
   DocumentSnapshot item;
-  int _qtd = 1;
-  List<Map<String, dynamic>> _lista = List();
+
   Stream<QuerySnapshot> _adicionarListenerListaPedidos(){
-   Firestore.instance.collection("Pedidos").getDocuments().then((snapshot){
-     _controller.add(snapshot);
+
+    var stream =  Firestore.instance.collection("Pedidos").snapshots();
+    stream.listen((snapshot){
+      _controller.add(snapshot);
     });
   }
 
@@ -95,11 +96,14 @@ class _ListaPedidosState extends State<ListaPedidos> {
                                   venda.metodoPagamento = pedidos["meioPagamento"];
                                   venda.idCliente = pedidos["idUsuario"];
 
+
                                   if(_admController.cadastrarVendaOnline(venda, _data)!= null){
                                     Toast.show("Venda realizada!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                                    _admController.excluirPedido(pedidos["idPedido"]);
                                     setState(() {
                                       Navigator.pop(context);
                                     });
+
                                   }else{
                                     Toast.show("Erro ao realizar venda, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                                   }
@@ -112,7 +116,8 @@ class _ListaPedidosState extends State<ListaPedidos> {
                     );
                   },
 
-                  title: Text(pedidos["nomeUsuario"]),
+                  leading: Text(pedidos["nomeUsuario"]),
+                  trailing: Text(pedidos["hora"]),
                 ),
               );
             },

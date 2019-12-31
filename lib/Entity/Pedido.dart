@@ -28,11 +28,19 @@ class Pedido{
       "total" :this._total,
       "listaPedidos" : this._mapItemPedido,
       "idPedido" : this.idPedido,
-      "idUsuario" : this.idUsuario
+      "idUsuario" : this.idUsuario,
+      "hora" : this.hora,
+      "data" : this.data
     };
     return map;
   }
 
+
+  String get data => _data;
+
+  set data(String value) {
+    _data = value;
+  }
 
   String get observacao => _observacao;
 
@@ -87,6 +95,12 @@ class Pedido{
 
   set idPedido(String value) {
     _idPedido = value;
+  }
+
+  String get hora => _hora;
+
+  set hora(String value) {
+    _hora = value;
   }
 
 
