@@ -20,9 +20,10 @@ class _PrincipalState extends State<Principal> with SingleTickerProviderStateMix
 
   TabController _tabController;
   List<String> _itensMenu = [
-    "Sair",
+
     "Vender",
-    "Vendas"
+    "Vendas",
+    "Sair",
   ];
 
   @override
@@ -36,12 +37,6 @@ class _PrincipalState extends State<Principal> with SingleTickerProviderStateMix
 
   _escolhaMenuItem(String itemEscolhido){
     switch(itemEscolhido){
-      case "Sair":
-        _deslogarUsuario();
-        Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => Login()
-        ));
-        break;
       case "Vender":
         Navigator.push(context, MaterialPageRoute(
           builder: (context) => Venda()
@@ -50,6 +45,12 @@ class _PrincipalState extends State<Principal> with SingleTickerProviderStateMix
       case "Vendas":
         Navigator.push(context, MaterialPageRoute(
             builder: (context) => Vendas()
+        ));
+        break;
+      case "Sair":
+        _deslogarUsuario();
+        Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) => Login()
         ));
         break;
     }

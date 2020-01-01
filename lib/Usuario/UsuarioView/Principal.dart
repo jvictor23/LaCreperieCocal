@@ -27,24 +27,23 @@ class _PrincipalState extends State<Principal>
   String _idUser;
   Firestore db = Firestore.instance;
   int _qtdCarrinho = 0;
-  UsuarioController _usuarioController = UsuarioController();
   String _mostarQtd = "0";
 
   _verificaUsuarioLogado()async{
     Firestore db = Firestore.instance;
     FirebaseAuth auth = FirebaseAuth.instance;
     FirebaseUser user = await auth.currentUser();
-    DocumentSnapshot snapshot = await db.collection("usuarios").document(user.uid).get();
+    DocumentSnapshot snapshot = await db.collection("Usuarios").document(user.uid).get();
 
-   /* if(user == null){
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+    if(user == null){
+      Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) => Login()
-      ),null);
+      ));
     }else if(!snapshot.exists){
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+      Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) => Login()
-      ),null);
-    }*/
+      ));
+    }
   }
 
 
@@ -83,7 +82,7 @@ class _PrincipalState extends State<Principal>
       length: 3,
       vsync: this,
     );
-    //_verificaUsuarioLogado();
+    _verificaUsuarioLogado();
     _quantidadeCarrinho();
   }
 

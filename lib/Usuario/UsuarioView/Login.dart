@@ -32,6 +32,7 @@ class _LoginState extends State<Login> {
   Map userProfile;
   final facebookLogin = FacebookLogin();
 
+
   _verificaCampos() {
     String email = _controllerEmail.text;
     String senha = _controllerSenha.text;

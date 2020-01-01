@@ -151,7 +151,7 @@ class UsuarioModel{
 
    bool atualizarUsuario(Usuario usuario){
     Firestore db = Firestore.instance;
-    db.collection("Usuario").document(usuario.id).setData(usuario.toMap());
+    db.collection("Usuarios").document(usuario.id).setData(usuario.toMap());
     return true;
   }
 

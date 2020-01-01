@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Cores.dart';
@@ -17,12 +18,17 @@ class _ConfiguracoesState extends State<Configuracoes> {
   UsuarioController _usuarioController = UsuarioController();
   Usuario _usuario = Usuario();
   DocumentSnapshot _snapshot;
+  String _nome;
+  String _endereco;
+  String _telefone;
+
+
 
 
   _verificaCampos(Usuario usuario){
-    if(usuario.nome.isNotEmpty){
-      if(usuario.endereco.isNotEmpty){
-        if(usuario.telefone.isNotEmpty){
+    if(usuario.nome != null){
+      if(usuario.endereco != null){
+        if(usuario.telefone != null){
 
           if(_usuarioController.atualizarUsuario(usuario)){
             Toast.show("Dados atualizados!", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -64,6 +70,8 @@ class _ConfiguracoesState extends State<Configuracoes> {
       _usuario.telefone = _snapshot["telefone"];
     }
 
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Configurações"),
@@ -85,7 +93,6 @@ class _ConfiguracoesState extends State<Configuracoes> {
                     enabled: false,
                     initialValue: _usuario.nome == null ? "" : _usuario.nome,
                     onChanged: (changed){
-                        _usuario.nome = changed;
                     },
                     style: TextStyle(
                         color: Color(Cores().corTexto)
@@ -115,9 +122,7 @@ class _ConfiguracoesState extends State<Configuracoes> {
                   child: TextFormField(
                     initialValue: _usuario.endereco == null ? "" : _usuario.endereco,
                     onChanged: (changed){
-
-                        _usuario.endereco = changed;
-
+                          _endereco = changed;
                     },
                     style: TextStyle(
                         color: Color(Cores().corTexto)
@@ -146,7 +151,7 @@ class _ConfiguracoesState extends State<Configuracoes> {
                   initialValue: _usuario.telefone == null ? "" : _usuario.telefone,
                   onChanged: (changed){
 
-                      _usuario.telefone = changed;
+                    _telefone = changed;
 
                   },
                   style: TextStyle(
@@ -173,6 +178,18 @@ class _ConfiguracoesState extends State<Configuracoes> {
                    elevation: 20,
                    padding: EdgeInsets.fromLTRB(8, 16, 8, 16),
                    onPressed: (){
+
+                     if(_endereco == null){
+                       _endereco = _snapshot["endereco"];
+                     }
+                     if(_telefone == null){
+                       _telefone = _snapshot["telefone"];
+                     }
+                     print("aqui endereco - "+_endereco.toString());
+                     print("aqui telefone - "+_telefone.toString());
+
+                     _usuario.endereco = _endereco;
+                     _usuario.telefone = _telefone;
                      _verificaCampos(_usuario);
                    },
                    color: Color(Cores().corBotoes),

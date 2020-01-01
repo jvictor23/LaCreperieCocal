@@ -40,6 +40,7 @@ class _VendaState extends State<Venda> {
     setState(() {
       _mostrarTotal = _total.toString();
     });
+
   }
 
   @override
@@ -149,7 +150,103 @@ class _VendaState extends State<Venda> {
                       ],
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                      builder: (context){
+                        return AlertDialog(
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: 5),
+                                child: Text(
+                                    produtos.nomeProduto
+                                ),
+                              ),
+                              Text("Quantidade"),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    left: 80, right: 80),
+                                child: TextFormField(
+                                  initialValue: _qtd
+                                      .toString(),
+                                  onChanged: (result) {
+                                    _qtd = int.parse(
+                                        result);
+                                  },
+                                  keyboardType: TextInputType
+                                      .number,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                          borderRadius: BorderRadius
+                                              .circular(6)
+                                      )
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Cancelar")
+                            ),
+                            FlatButton(
+                                child: Text("Confirmar"),
+                                onPressed: () {
+                                  setState(() {
+                                    produtos.qtd = _qtd;
+                                  });
+                                  var x = produtos.qtd * produtos.preco;
+                                  _total = x;
+                                  setState(() {
+                                    _mostrarTotal = _total.toString();
+                                  });
+                                  Navigator.pop(context);
+                                }
+                            )
+                          ],
+                        );
+                      }
+                    );
+                  },
+                  onLongPress: (){
+                    showDialog(
+                        context: context,
+                      builder: (context){
+                          return AlertDialog(
+                            title: Text("Deseja remover este produto da lista?"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Cancelar"),
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("Confirmar"),
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                  var total = produtos.qtd*produtos.preco;
+                                  var x = _total - total;
+                                  setState(() {
+                                    _mostrarTotal = x.toString();
+                                  });
+                                  _total = x;
+                                  setState(() {
+                                        _listaProduto.removeAt(index);
+                                      });
+                                },
+                              ),
+                            ],
+                          );
+                      }
+                    );
+                  },
                 ),
               );
             }
