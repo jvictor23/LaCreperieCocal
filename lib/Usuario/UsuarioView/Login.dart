@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -23,15 +26,12 @@ class _LoginState extends State<Login> {
 
 
   UsuarioController _usuarioController = new UsuarioController();
-
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
   String _mensagemErro = "";
-
   bool _isLoggedIn = true;
   Map userProfile;
   final facebookLogin = FacebookLogin();
-
 
   _verificaCampos() {
     String email = _controllerEmail.text;
@@ -148,7 +148,6 @@ class _LoginState extends State<Login> {
 
    // FirebaseAuth auth = FirebaseAuth.instance;
     //auth.signOut();
-
     _verificaUsuarioLogado();
 
   }

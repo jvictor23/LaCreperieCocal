@@ -155,7 +155,6 @@ class UsuarioModel{
     return true;
   }
 
-
   StreamController<QuerySnapshot> listarCrepeSalgado(){
 
     var _controller = StreamController<QuerySnapshot>.broadcast();

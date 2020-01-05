@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +26,6 @@ class _CarrinhoState extends State<Carrinho> {
   TextEditingController _controllerObs = new TextEditingController();
   List<DocumentSnapshot> _doc;
   List<Map<String, dynamic>> itensCarrinho = new List();
-
-
   String _idUser;
   final _controller = StreamController<QuerySnapshot>.broadcast();
   Firestore db = Firestore.instance;
@@ -34,6 +33,9 @@ class _CarrinhoState extends State<Carrinho> {
   var _total = 0.00;
   double _ultimoTotal = 0.0;
   int _qtd = 1;
+  StreamSubscription<DataConnectionStatus> listener;
+  bool _conexao = false;
+  String _mensagem;
 
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -77,11 +79,62 @@ class _CarrinhoState extends State<Carrinho> {
   @override
   void initState() {
     super.initState();
+    _pegarConexao();
     _recuperarDadosUsuario();
+  }
+
+  _pegarConexao()async{
+    DataConnectionStatus status = await checkInternet();
+    if(status == DataConnectionStatus.connected){
+      setState(() {
+        _conexao = true;
+      });
+
+    }else{
+      setState(() {
+        _conexao = false;
+      });
+    }
+
+  }
+
+  checkInternet()async{
+    print("The statement 'this machine is connected to the Internet' is: ");
+    print(await DataConnectionChecker().hasConnection);
+    // returns a bool
+
+    // We can also get an enum value instead of a bool
+    print("Current status: ${await DataConnectionChecker().connectionStatus}");
+    // prints either DataConnectionStatus.connected
+    // or DataConnectionStatus.disconnected
+
+    // This returns the last results from the last call
+    // to either hasConnection or connectionStatus
+    print("Last results: ${DataConnectionChecker().lastTryResults}");
+
+    // actively listen for status updates
+    // this will cause DataConnectionChecker to check periodically
+    // with the interval specified in DataConnectionChecker().checkInterval
+    // until listener.cancel() is called
+    listener = DataConnectionChecker().onStatusChange.listen((status) {
+      switch (status) {
+        case DataConnectionStatus.connected:
+          print('Data connection is available.');
+          break;
+        case DataConnectionStatus.disconnected:
+          print('You are disconnected from the internet.');
+          break;
+      }
+    });
+    return await DataConnectionChecker().connectionStatus;
   }
 
   @override
   Widget build(BuildContext context) {
+
+    Timer(Duration(seconds: 5),(){
+
+    });
 
     int _estadoSwitch;
 
@@ -332,55 +385,69 @@ class _CarrinhoState extends State<Carrinho> {
                       color: Colors.white,
                       child: Text("Confirmar"),
                       onPressed: (){
+                        setState(() {
+                          _mensagem = "Erro ao enviar pedido, verifique sua conexão com a internet";
+                        });
 
-                        if(_doc == null){
+                        if(_conexao == false){
                           Toast.show(
-                              "Adicione produtos ao carrinho para realizar o pedido!", context, duration: Toast.LENGTH_LONG,
+                              _mensagem,
+                              context, duration: Toast.LENGTH_LONG,
                               gravity: Toast.BOTTOM);
-                        }else if(_estadoSwitch == null){
-                          Toast.show(
-                              "Escholha um metodo de pagamento!", context, duration: Toast.LENGTH_LONG,
-                              gravity: Toast.BOTTOM);
-                        }else{
+                        }else {
+                          if (_doc == null) {
+                            Toast.show(
+                                "Adicione produtos ao carrinho para realizar o pedido!",
+                                context, duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
+                          } else if (_estadoSwitch == null) {
+                            Toast.show(
+                                "Escholha um metodo de pagamento!", context,
+                                duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
+                          } else {
+                            if (_estadoSwitch == 0) {
+                              setState(() {
+                                _metodoPagamento = "Dinheiro";
+                              });
+                            } else {
+                              setState(() {
+                                _metodoPagamento = "Cartao";
+                              });
+                            }
 
-                          if(_estadoSwitch == 0){
-                            setState(() {
-                              _metodoPagamento = "Dinheiro";
-                            });
-                          }else{
-                            setState(() {
-                              _metodoPagamento = "Cartao";
-                            });
+
+                            ItemPedido itemPedido = new ItemPedido();
+                            for (DocumentSnapshot a in _doc) {
+                              itemPedido.nomeProduto = a["nomeProduto"];
+                              itemPedido.ingredientes = a["ingredientes"];
+                              itemPedido.imagem = a["imagem"];
+                              itemPedido.preco = a["preco"];
+                              itensCarrinho.add(itemPedido.toMap());
+                            }
+
+                            DateTime _time = DateTime.now();
+
+
+                            Pedido pedido = new Pedido();
+                            pedido.mapItemPedido = itensCarrinho;
+                            pedido.meioPagamento = _metodoPagamento;
+                            pedido.total = _ultimoTotal;
+                            pedido.observacao = _controllerObs.text;
+                            pedido.hora =
+                                formatDate(_time, [H, ":", nn]).toString();
+                            pedido.data =
+                                formatDate(_time, [dd, "/", mm, "/", yyyy])
+                                    .toString();
+                            _usuarioController.finalizarPedido(pedido);
+                            Navigator.pop(context);
+
+                            Toast.show(
+                                "Pedido Realizado!",
+                                context, duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
                           }
-
-
-
-                          ItemPedido itemPedido = new ItemPedido();
-                          for(DocumentSnapshot a in _doc){
-
-                            itemPedido.nomeProduto = a["nomeProduto"];
-                            itemPedido.ingredientes = a["ingredientes"];
-                            itemPedido.imagem = a["imagem"];
-                            itemPedido.preco = a["preco"];
-                            itensCarrinho.add(itemPedido.toMap());
-
-                          }
-
-                          DateTime _time = DateTime.now();
-
-
-                          Pedido pedido = new Pedido();
-                          pedido.mapItemPedido = itensCarrinho;
-                          pedido.meioPagamento = _metodoPagamento;
-                          pedido.total = _ultimoTotal;
-                          pedido.observacao = _controllerObs.text;
-                          pedido.hora = formatDate(_time, [H, ":", nn]).toString();
-                          pedido.data = formatDate(_time, [dd, "/", mm, "/", yyyy]).toString();
-                          _usuarioController.finalizarPedido(pedido);
-                          Navigator.pop(context);
-
                         }
-
                       },
                     )
                   ],
