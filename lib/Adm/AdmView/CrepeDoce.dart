@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Cores.dart';
 import 'package:transparent_image/transparent_image.dart';
-
-
+import 'package:lacreperie_cocal/Adm/AdmView/AtualizarProduto.dart';
 
 class CrepeDoce extends StatefulWidget {
   @override
@@ -44,7 +43,15 @@ class _CrepeDoceState extends State<CrepeDoce> {
     var stream = StreamBuilder(
         stream: _controller.stream,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Container(child: Center(child: Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],),),);
+          if (!snapshot.hasData) return Container(child: Center(child: Column(
+            children: <Widget>[
+              Text("Carregando..."),
+              CircularProgressIndicator()
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          ),
+          );
           QuerySnapshot querySnapshot = snapshot.data;
 
           return ListView.builder(
@@ -52,7 +59,7 @@ class _CrepeDoceState extends State<CrepeDoce> {
             itemBuilder: (context, index) {
               List<DocumentSnapshot> doc = querySnapshot.documents.toList();
               DocumentSnapshot produtos = doc[index];
-
+              double preco = produtos["preco"];
               return Card(
                 color: Color(Cores().corBotoes),
                 child: ListTile(
@@ -65,6 +72,9 @@ class _CrepeDoceState extends State<CrepeDoce> {
                           FlatButton(
                               onPressed: () {
                                 Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => AtualizarProduto(produtos),
+                                ));
                               },
                               child: Text("Atualizar")
                           ),
@@ -108,9 +118,25 @@ class _CrepeDoceState extends State<CrepeDoce> {
                       ),
                     ),
                   ),
-                  title: Text(produtos["nomeProduto"]),
-                  subtitle: Text(produtos["ingredientes"]),
-                  trailing: Text("R\$"+produtos["preco"].toString()),
+                  title: Padding(
+                      padding: EdgeInsets.only(top: 6,),
+                      child: Text(produtos["nomeProduto"])
+                  ),
+                  subtitle: Padding(
+                    padding: EdgeInsets.only(bottom: 6),
+                    child: Text(produtos["ingredientes"]),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "R\$" + preco.toStringAsFixed(2),
+                        style: TextStyle(
+                            color: Colors.blue
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

@@ -14,7 +14,7 @@ class _VisualizarVendaState extends State<VisualizarVenda> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pedido"),
+        title: Text("Visualizar Venda"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,7 +62,6 @@ class _VisualizarVendaState extends State<VisualizarVenda> {
                                 ],
                                 )
                               )
-
                             ],
                           ),
                         )
@@ -70,7 +69,6 @@ class _VisualizarVendaState extends State<VisualizarVenda> {
                 )
             ),
           ),
-
 
           Center(
             child: Padding(
@@ -90,7 +88,6 @@ class _VisualizarVendaState extends State<VisualizarVenda> {
                                     fontSize: 10
                                 ),
                               ),
-
                               Padding(
                                 padding: EdgeInsets.only(left: 4),
                                 child: Text(
@@ -130,8 +127,8 @@ class _VisualizarVendaState extends State<VisualizarVenda> {
 
                               Padding(
                                 padding: EdgeInsets.only(left: 4),
-                                child: Text(
-                                  widget.documentSnapshot["total"].toString(),
+                                child: Text("R\$ " +
+                                  widget.documentSnapshot["total"].toStringAsFixed(2),
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold

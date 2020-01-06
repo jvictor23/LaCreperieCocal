@@ -38,7 +38,7 @@ class _VendaState extends State<Venda> {
 
 
     setState(() {
-      _mostrarTotal = _total.toString();
+      _mostrarTotal = _total.toStringAsFixed(2);
     });
 
   }
@@ -106,7 +106,7 @@ class _VendaState extends State<Venda> {
                     _listaProduto = List();
                     _total = 0.0;
                     _qtd = 0;
-                    _mostrarTotal = _total.toString();
+                    _mostrarTotal = _total.toStringAsFixed(2);
                     Navigator.pop(context);
                   });
                 } else {
@@ -134,7 +134,7 @@ class _VendaState extends State<Venda> {
                         Padding(
                           padding: EdgeInsets.only(bottom: 5),
                           child: Text(
-                            "R\$" + produtos.preco.toString(),
+                            "R\$" + produtos.preco.toStringAsFixed(2),
                             style: TextStyle(
                                 color: Colors.blue
                             ),
@@ -204,7 +204,7 @@ class _VendaState extends State<Venda> {
                                   var x = produtos.qtd * produtos.preco;
                                   _total = x;
                                   setState(() {
-                                    _mostrarTotal = _total.toString();
+                                    _mostrarTotal = _total.toStringAsFixed(2);
                                   });
                                   Navigator.pop(context);
                                 }
@@ -234,7 +234,7 @@ class _VendaState extends State<Venda> {
                                   var total = produtos.qtd*produtos.preco;
                                   var x = _total - total;
                                   setState(() {
-                                    _mostrarTotal = x.toString();
+                                    _mostrarTotal = x.toStringAsFixed(2);
                                   });
                                   _total = x;
                                   setState(() {
@@ -272,6 +272,7 @@ class _VendaState extends State<Venda> {
                               itemCount: doc.length,
                               itemBuilder: (context, index) {
                                 DocumentSnapshot produtos = doc[index];
+                                double preco = produtos["preco"];
                                 return Card(
                                   elevation: 5,
                                   child: ListTile(
@@ -340,7 +341,7 @@ class _VendaState extends State<Venda> {
                                     },
                                     title: Text(produtos["nomeProduto"]),
                                     trailing: Text(
-                                        produtos["preco"].toString()),
+                                        preco.toStringAsFixed(2)),
                                   ),
                                 );
                               },

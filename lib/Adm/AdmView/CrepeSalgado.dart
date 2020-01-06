@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Adm/AdmView/AtualizarProduto.dart';
@@ -43,7 +44,7 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
     var stream = StreamBuilder(
         stream: _controller.stream,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Container(child: Center(child: Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],),),);
+          if (!snapshot.hasData) return Container(child: Center(child: Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],mainAxisAlignment: MainAxisAlignment.center,),),);
 
           QuerySnapshot querySnapshot = snapshot.data;
 
@@ -52,7 +53,7 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
             itemBuilder: (context, index) {
               List<DocumentSnapshot> doc = querySnapshot.documents.toList();
               DocumentSnapshot produtos = doc[index];
-
+              double preco = produtos["preco"];
               return Card(
                 color: Color(Cores().corBotoes),
                 child: ListTile(
@@ -112,9 +113,30 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
                       ),
                     ),
                   ),
-                  title: Text(produtos["nomeProduto"]),
-                  subtitle: Text(produtos["ingredientes"]),
-                  trailing: Text("R\$"+produtos["preco"].toString()),
+                  title: Padding(
+                      padding: EdgeInsets.only(top: 6,),
+                      child: Text(
+                        produtos["nomeProduto"],
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
+                      )
+                  ),
+                  subtitle: Padding(
+                    padding: EdgeInsets.only(bottom: 6),
+                    child: Text(produtos["ingredientes"]),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "R\$" + preco.toStringAsFixed(2),
+                        style: TextStyle(
+                            color: Colors.blue
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

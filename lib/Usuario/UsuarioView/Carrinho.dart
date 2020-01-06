@@ -54,7 +54,7 @@ class _CarrinhoState extends State<Carrinho> {
       }
 
       setState(() {
-        _mostrarTotal = _total.toString();
+        _mostrarTotal = _total.toStringAsFixed(2);
       });
       _ultimoTotal = _total;
       _total = 0.0;
@@ -175,6 +175,7 @@ class _CarrinhoState extends State<Carrinho> {
                 itemBuilder: (context, index) {
                  _doc = querySnapshot.documents.toList();
                  DocumentSnapshot produtos = _doc[index];
+                 double preco = produtos["preco"];
                   return Card(
                     color: Color(Cores().corBotoes),
                     child: ListTile(
@@ -254,7 +255,7 @@ class _CarrinhoState extends State<Carrinho> {
                                       var total = produtos["quantidade"]*produtos["preco"];
                                       var x =_total-total;
                                       setState(() {
-                                        _mostrarTotal=x.toString();
+                                        _mostrarTotal=x.toStringAsFixed(2);
                                       });
 
                                       Navigator.pop(context);
@@ -312,7 +313,7 @@ class _CarrinhoState extends State<Carrinho> {
                             Padding(
                               padding: EdgeInsets.only(bottom: 5),
                               child: Text(
-                                  "R\$" + produtos["preco"].toString(),
+                                  "R\$" + preco.toStringAsFixed(2),
                                 style: TextStyle(
                                     color: Colors.blue
                                 ),

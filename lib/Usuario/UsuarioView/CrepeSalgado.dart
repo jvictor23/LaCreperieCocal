@@ -56,7 +56,7 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
               return Container(child: Center(child: Column(children: <Widget>[
                 Text("Carregando..."),
                 CircularProgressIndicator()
-              ],),),);
+              ],mainAxisAlignment: MainAxisAlignment.center,),),);
             }
                 QuerySnapshot querySnapshot = snapshot.data;
                 return ListView.builder(
@@ -65,11 +65,10 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
                     List<DocumentSnapshot> doc = querySnapshot.documents
                         .toList();
                     DocumentSnapshot produtos = doc[index];
-
+                    double preco = produtos["preco"];
                     return Card(
                       color: Color(Cores().corBotoes),
                       child: ListTile(
-
                           onTap: () {
                             showDialog(context: context, builder: (context) {
                               return AlertDialog(
@@ -133,7 +132,6 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
                             onTap: () {
                               showDialog(context: context, builder: (context) {
                                 return AlertDialog(
-
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
@@ -176,7 +174,7 @@ class _CrepeSalgadoState extends State<CrepeSalgado> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                "R\$" + produtos["preco"].toString(),
+                                "R\$" + preco.toStringAsFixed(2),
                                 style: TextStyle(
                                     color: Colors.blue
                                 ),

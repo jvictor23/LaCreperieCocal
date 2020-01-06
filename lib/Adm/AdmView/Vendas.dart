@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Adm/AdmView/VisualizarVenda.dart';
 import 'package:lacreperie_cocal/Cores.dart';
@@ -13,7 +14,7 @@ class Vendas extends StatefulWidget {
 class _VendasState extends State<Vendas> {
 
   DateTime _data = DateTime.now();
-  TextEditingController _controllerData = TextEditingController();
+  var _controllerData = MaskedTextController(mask: "00/0000");
   AdmController _admController = AdmController();
   QuerySnapshot _querySnapshot;
   String _mostrarTotal = "0,00";
@@ -27,7 +28,7 @@ class _VendasState extends State<Vendas> {
     }
 
     setState(() {
-      _mostrarTotal = _total.toString();
+      _mostrarTotal = _total.toStringAsFixed(2);
     });
 
     _ultimoTotal = _total;
@@ -73,13 +74,13 @@ class _VendasState extends State<Vendas> {
                               context: context,
                               builder: (context){
                                 return AlertDialog(
-                                  title: Text("Digite o mês da venda (Ex. 15/2019)"),
+                                  title: Text("Digite o mês da venda (Ex. 05/2020)"),
                                   content: TextField(
                                     autofocus: true,
                                   controller: _controllerData,
                                   style: TextStyle(color: Color(Cores().corTexto)),
                                   cursorColor: Color(Cores().corTexto),
-                                  keyboardType: TextInputType.phone,
+                                  keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: Color(Cores().corBotoes),

@@ -47,7 +47,12 @@ class _CrepeDoceState extends State<CrepeDoce> {
         stream: _controller.stream,
 
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Container(child: Center(child: Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],),),);
+          if (!snapshot.hasData) return Container(child: Center(child:
+          Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],
+          mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          ),
+          );
           QuerySnapshot querySnapshot = snapshot.data;
 
           return ListView.builder(
@@ -55,7 +60,7 @@ class _CrepeDoceState extends State<CrepeDoce> {
             itemBuilder: (context, index) {
               List<DocumentSnapshot> doc = querySnapshot.documents.toList();
               DocumentSnapshot produtos = doc[index];
-
+              double preco = produtos["preco"];
               return Card(
                 color: Color(Cores().corBotoes),
                 child: ListTile(
@@ -157,7 +162,7 @@ class _CrepeDoceState extends State<CrepeDoce> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "R\$"+produtos["preco"].toString(),
+                          "R\$"+preco.toStringAsFixed(2),
                           style: TextStyle(
                               color: Colors.blue
                           ),

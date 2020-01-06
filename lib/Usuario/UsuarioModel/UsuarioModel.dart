@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Entity/Usuario.dart';
+import 'package:lacreperie_cocal/Usuario/UsuarioView/Principal.dart';
 
 
 
@@ -45,19 +47,11 @@ class UsuarioModel{
   }
 
 
-  dynamic logarUsuario(Usuario usuario){
-    bool x = false;
+  bool logarUsuario(Usuario usuario, BuildContext context){
 
-    FirebaseAuth auth = FirebaseAuth.instance;
-    auth.signInWithEmailAndPassword(
-        email: usuario.email,
-        password: usuario.senha
-    ).then((firebaseUser){
-      return firebaseUser;
-    }).catchError((error){
-      print(error.toString());
-    });
-    return x;
+
+
+
   }
 
   Future<FirebaseUser> verificaUsuarioLogado()async{

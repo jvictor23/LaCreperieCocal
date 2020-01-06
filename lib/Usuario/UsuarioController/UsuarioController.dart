@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Entity/Pedido.dart';
 import 'package:lacreperie_cocal/Entity/Produto.dart';
 import 'package:lacreperie_cocal/Entity/Usuario.dart';
@@ -21,9 +22,9 @@ class UsuarioController{
     return _usuarioModel.cadastrarUsuario(usuario);
   }
 
-  dynamic logarUsuario(Usuario usuario){
+  bool logarUsuario(Usuario usuario, BuildContext context){
 
-    return _usuarioModel.logarUsuario(usuario);
+    return _usuarioModel.logarUsuario(usuario, context);
 
   }
 

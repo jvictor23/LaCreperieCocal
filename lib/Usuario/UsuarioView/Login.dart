@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -14,6 +15,8 @@ import 'package:lacreperie_cocal/Usuario/UsuarioView/LoginFacebook.dart';
 import 'package:lacreperie_cocal/Usuario/UsuarioView/Principal.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:toast/toast.dart';
 
 
 
@@ -45,34 +48,32 @@ class _LoginState extends State<Login> {
         usuario.email = email;
         usuario.senha = senha;
 
-        if(_usuarioController.logarUsuario(usuario) != null){
+        FirebaseAuth auth = FirebaseAuth.instance;
+        auth.signInWithEmailAndPassword(
+            email: usuario.email,
+            password: usuario.senha
+        ).then((firebaseUser){
+          Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) => Principal()
+          ));
 
-          if(usuario.email == "administrador@hotmail.com"){
-            Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => prefix0.Principal()
-            ));
-          }else{
-            Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => Principal()
-            ));
-
-          }
-        }else if(_usuarioController.logarUsuario(usuario) == false){
-
-          setState(() {
-            _mensagemErro = "Erro ao logar usuário, verifique e-mail e senha e tente novamente";
-          });
-
-        }
+        }).catchError((error){
+          print(error.toString());
+          Toast.show(
+              "Erro ao logar usuario, verifique email,senha e conexão com a internet!", context, duration: Toast.LENGTH_LONG,
+              gravity: Toast.BOTTOM);
+        });
 
       }else{
-        _mensagemErro = "O campo senha não pode ficar vazio e deve conter mais de 6 caracteres";
+        Toast.show(
+            "O campo senha não pode ficar vazio e deve conter mais de 6 caracteres!", context, duration: Toast.LENGTH_LONG,
+            gravity: Toast.BOTTOM);
       }
 
     }else{
-      setState(() {
-        _mensagemErro = "O campo email não pode ficar vazio";
-      });
+      Toast.show(
+          "O campo email não pode ficar vazio", context, duration: Toast.LENGTH_LONG,
+          gravity: Toast.BOTTOM);
     }
 
   }
@@ -89,32 +90,48 @@ class _LoginState extends State<Login> {
                   .then((user) async {
                     Firestore db = Firestore.instance;
                     DocumentSnapshot snapshot = await db.collection("Usuarios").document(user.user.uid).get();
-                    if(snapshot.exists){
+                    if(user.user.uid == "iwkIk7JXGhaNaIlxIifytADzz142" || user.user.uid == "am0OXbilJsO8kK5ZbO8M9tJo6RA2"){
                       Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) => Principal()
+                        builder: (context) => prefix0.Principal()
                       ));
-                    }else{
-                      Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) => LoginFacebook(user)
-                      ));
+                    }else {
+                      if (snapshot.exists) {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (context) => Principal()
+                        ));
+                      } else {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (context) => LoginFacebook(user)
+                        ));
+                      }
                     }
-
 
               })
                   .catchError((error){
-                    print("Error1 aqui ----------------------------- "+ error);
+                Toast.show(
+                    "ERROR!", context, duration: Toast.LENGTH_LONG,
+                    gravity: Toast.BOTTOM);
               });
               break;
             case FacebookLoginStatus.cancelledByUser:
               print( "Cancelado pelo usuario ---------------------------------"  + FacebookLoginStatus.cancelledByUser.toString());
+              Toast.show(
+                  "Você cancelou a autenticação!", context, duration: Toast.LENGTH_LONG,
+                  gravity: Toast.BOTTOM);
               break;
             case FacebookLoginStatus.error:
               print(result.errorMessage);
               print("Error2 aqui ----------------------------- "+ FacebookLoginStatus.error.toString());
+              Toast.show(
+                  "Erro ao relalizar autenticação, tente novamente!", context, duration: Toast.LENGTH_LONG,
+                  gravity: Toast.BOTTOM);
               break;
           }
     }).catchError((error){
       print(error);
+      Toast.show(
+          "ERROR!", context, duration: Toast.LENGTH_LONG,
+          gravity: Toast.BOTTOM);
     });
 
   }
@@ -130,7 +147,7 @@ class _LoginState extends State<Login> {
   _verificaUsuarioLogado()async{
     FirebaseUser user = await _usuarioController.verificaUsuarioLogado();
     if(user != null) {
-      if (user.email == "administrador@hotmail.com") {
+      if (user.uid == "iwkIk7JXGhaNaIlxIifytADzz142" || user.uid == "am0OXbilJsO8kK5ZbO8M9tJo6RA2") {
         Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) => prefix0.Principal()
         ));
@@ -284,15 +301,6 @@ class _LoginState extends State<Login> {
                       style: TextStyle(color: Color(Cores().corTexto)),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: Text(
-                        _mensagemErro,
-                        style: TextStyle(fontSize: 20, color: Colors.red),
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),

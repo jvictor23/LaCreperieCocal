@@ -181,8 +181,6 @@ class _PedidoState extends State<Pedido> {
                 ),
               ),
 
-
-
               Center(
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(5, 0, 5, 0),

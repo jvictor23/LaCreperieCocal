@@ -2,6 +2,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
 import 'package:lacreperie_cocal/Cores.dart';
@@ -24,7 +25,7 @@ class _CadastrarProdutoState extends State<CadastrarProduto> {
   TextEditingController _controllerNomeProduto = TextEditingController();
   TextEditingController _controllerIgredientes= TextEditingController();
   TextEditingController _controllerTipo = TextEditingController();
-  TextEditingController _controllerPreco = TextEditingController();
+  var _controllerPreco = MoneyMaskedTextController(leftSymbol: "R\$", decimalSeparator: ".");
   String _mensagemErro ="";
   File _imagem;
   bool _subindoImagem = false;
@@ -35,7 +36,8 @@ class _CadastrarProdutoState extends State<CadastrarProduto> {
     String nomeProduto = _controllerNomeProduto.text;
     String ingredientes = _controllerIgredientes.text;
     String tipo= _controllerTipo.text;
-    double preco = double.parse(_controllerPreco.text);
+    String p = _controllerPreco.text.replaceAll((r'R$'), "");
+    double preco = double.parse(p);
 
     if(nomeProduto.isNotEmpty){
       if(ingredientes.isNotEmpty){
@@ -318,7 +320,7 @@ class _CadastrarProdutoState extends State<CadastrarProduto> {
                     style: TextStyle(color: Color(Cores().corTexto)),
                     cursorColor: Color(Cores().corTexto),
                     keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
+                        TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Color(Cores().corBotoes),

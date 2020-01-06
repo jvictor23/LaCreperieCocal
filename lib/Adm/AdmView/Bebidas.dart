@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lacreperie_cocal/Adm/AdmController/AdmController.dart';
+import 'package:lacreperie_cocal/Adm/AdmView/AtualizarProduto.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../../Cores.dart';
@@ -46,17 +47,24 @@ class _BebidasState extends State<Bebidas> {
         stream: _controller.stream,
         builder: (context, snapshot) {
 
-          if (!snapshot.hasData) return Container(child: Center(child: Column(children: <Widget>[Text("Carregando..."),CircularProgressIndicator()],),),);
-
-
+          if (!snapshot.hasData) return Container(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Carregando..."),
+                  CircularProgressIndicator()
+                ],
+              ),
+            ),
+          );
           QuerySnapshot querySnapshot = snapshot.data;
-
           return ListView.builder(
             itemCount: querySnapshot.documents.length,
             itemBuilder: (context, index) {
               List<DocumentSnapshot> doc = querySnapshot.documents.toList();
               DocumentSnapshot produtos = doc[index];
-
+              double preco = produtos["preco"];
               return Card(
                 color: Color(Cores().corBotoes),
                 child: ListTile(
@@ -69,6 +77,9 @@ class _BebidasState extends State<Bebidas> {
                           FlatButton(
                               onPressed: () {
                                 Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => AtualizarProduto(produtos),
+                                ));
                               },
                               child: Text("Atualizar")
                           ),
@@ -112,9 +123,25 @@ class _BebidasState extends State<Bebidas> {
                       ),
                     ),
                   ),
-                  title: Text(produtos["nomeProduto"]),
-                  subtitle: Text(produtos["ingredientes"]),
-                  trailing: Text("R\$"+produtos["preco"].toString()),
+                  title: Padding(
+                      padding: EdgeInsets.only(top: 6,),
+                      child: Text(produtos["nomeProduto"])
+                  ),
+                  subtitle: Padding(
+                    padding: EdgeInsets.only(bottom: 6),
+                    child: Text(produtos["ingredientes"]),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "R\$"+preco.toStringAsFixed(2),
+                        style: TextStyle(
+                            color: Colors.blue
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

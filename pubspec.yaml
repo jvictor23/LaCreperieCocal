@@ -36,6 +36,8 @@ dependencies:
   toast: ^0.1.5
   toggle_switch: ^0.1.4
   data_connection_checker: ^0.3.4
+  flutter_masked_text: ^0.8.0
+
 
 dev_dependencies:
   flutter_test:
